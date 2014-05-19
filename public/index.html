@@ -10,12 +10,15 @@
 
   <script language="javascript" type="text/javascript">
     var connection = new WebSocket("ws://localhost:12345/ws");
-    connection.onopen = function() {
+    connection.onopen = function(event) {
       console.log("connected!");
+      console.log(event.data);
+
+      //connection.send(JSON.stringify({event:"New
     }
 
     connection.onmessage = function(data) {
-      console.log("onmessage");
+      console.log("onmessage!");
       console.log(data);
     }
   </script>
