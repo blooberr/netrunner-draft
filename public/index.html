@@ -13,6 +13,11 @@
     connection.onopen = function() {
       console.log("connected!");
     }
+
+    connection.onmessage = function(data) {
+      console.log("onmessage");
+      console.log(data);
+    }
   </script>
 </html>
 
