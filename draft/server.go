@@ -1,9 +1,9 @@
 package draft
 
 import (
-  "net/http"
 	"code.google.com/p/go.net/websocket"
 	"fmt"
+	"net/http"
 )
 
 type Server struct {
