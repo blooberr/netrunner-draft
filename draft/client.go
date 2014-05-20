@@ -6,25 +6,28 @@ import (
 )
 
 type Client struct {
-	Ws         *websocket.Conn
-	PlayerName string
-	WriteChan  chan CommandPacket
+	Ws        *websocket.Conn
+	Player    *Player
+	WriteChan chan CommandPacket
 }
 
 func NewClient(ws *websocket.Conn, playerName string) *Client {
 	fmt.Printf("NewClient: %#v \n", ws)
 	writeChan := make(chan CommandPacket, 10)
-	return &Client{Ws: ws, PlayerName: playerName, WriteChan: writeChan}
+
+	newPlayer := &Player{Name: playerName}
+
+	return &Client{Ws: ws, Player: newPlayer, WriteChan: writeChan}
 }
 
 func (c *Client) Launch() {
 	c.listenWrite()
 }
 
-// Write - lazy short cut way.  I don't think this actully saves any time, but 
+// Write - lazy short cut way.  I don't think this actully saves any time, but
 // will feel more intuitive
 func (c *Client) Write(cp CommandPacket) {
-  c.WriteChan <- cp
+	c.WriteChan <- cp
 }
 
 func (c *Client) listenWrite() {

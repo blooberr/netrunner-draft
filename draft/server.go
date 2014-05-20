@@ -24,6 +24,7 @@ func (s *Server) Launch() {
 	onConnect := func(ws *websocket.Conn) {
 		numClients := len(s.Clients)
 		playerName := fmt.Sprintf("player-%d", numClients)
+
 		client := NewClient(ws, playerName)
 		s.AddClientChannel <- client
     client.Launch()
@@ -38,7 +39,7 @@ func (s *Server) Launch() {
 			fmt.Printf("Adding new client: %#v \n", newClient)
 
 			newNameMap := make(map[string]string)
-			newNameMap["name"] = newClient.PlayerName
+			newNameMap["name"] = newClient.Player.Name
       cp := CommandPacket{Event: "New Player", Data: newNameMap}
 
 			fmt.Printf("sending on writechan: %#v\n", cp)
