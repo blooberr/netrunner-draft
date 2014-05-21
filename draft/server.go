@@ -28,6 +28,7 @@ func (s *Server) Launch() {
 		client := NewClient(ws, playerName)
 		s.AddClientChannel <- client
     client.Launch()
+
 		defer ws.Close()
 	}
 
