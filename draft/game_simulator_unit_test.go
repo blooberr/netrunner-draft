@@ -56,4 +56,18 @@ func TestNewGame(t *testing.T) {
     t.Logf("player %s - %#v \n", player.Name, player.CorpStartingPack[0])
     t.Logf("player %s - %#v \n", player.Name, player.RunnerStartingPack[0])
   }
+
+  // draft pass 1
+  // set beginnig direction
+  round := 0
+
+  for playerId, player := range players {
+    cardInBoosterNum := 0
+
+    pickedCard := player.CorpStartingPack[round][cardInBoosterNum]
+
+    t.Logf("[%d] %s picked Card: %#v \n", playerId, player.Name, pickedCard)
+  }
+
 }
+

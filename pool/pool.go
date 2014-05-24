@@ -1,14 +1,81 @@
 package pool
 
-import(
-  "encoding/json"
-  "log"
-  "fmt"
-  "io/ioutil"
-  "math/rand"
-  "os"
-  "sort"
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"math/rand"
+	"os"
+	"sort"
 )
+
+type Pool struct {
+	DataPath string
+	Corp     []Card
+	Runner   []Card
+}
+
+func InitPool(randSeed int64, pathToData string) *Pool {
+  rand.Seed(randSeed)
+	p := Pool{DataPath: pathToData}
+	p.LoadCardPool(pathToData)
+	return &p
+}
+
+func (p *Pool) LoadCardPool(pathToData string) {
+  file, err := ioutil.ReadFile(pathToData)
+  if err != nil {
+    log.Fatalf("File error: %v \n", err)
+    os.Exit(1)
+  }
+
+  corp, runner := ProcessFile(file)
+  p.Corp = corp
+  p.Runner = runner
+}
+
+func (p *Pool) GenerateCorpBooster(numCards int) (booster []Card){
+  poolSize := len(p.Corp)
+  booster = []Card{}
+  for i := 0; i < numCards; i++ {
+    index := rand.Intn(poolSize)
+    card := p.Corp[index]
+     booster = append(booster, card)
+  }
+
+  return booster
+}
+
+func (p *Pool) GenerateRunnerBooster(numCards int) (booster []Card){
+  poolSize := len(p.Runner)
+  booster = []Card{}
+  for i := 0; i < numCards; i++ {
+    index := rand.Intn(poolSize)
+    card := p.Runner[index]
+     booster = append(booster, card)
+  }
+
+  return booster
+}
+
+/*
+func (p *Pool) GenerateRunnerBooster(numCards int) (booster []Card) {
+
+}
+*/
+func GenerateCardPool(cardPoolSize int, cards []Card) (pool []Card) {
+	originalPoolSize := len(cards)
+	pool = []Card{}
+
+	for i := 0; i < cardPoolSize; i++ {
+		index := rand.Intn(originalPoolSize)
+		card := cards[index]
+		pool = append(pool, card)
+	}
+
+	return pool
+}
 
 // GeneratePool pseudo-randomly generates a new pool of cards of size
 // cardPoolSize
@@ -79,51 +146,5 @@ func ProcessFile(file []byte) (corp []Card, runner []Card) {
 	fmt.Printf("Number of corp cards: %d \n", len(corp))
 	fmt.Printf("Number of runner cards: %d \n", len(runner))
 	return corp, runner
-}
-
-func LoadPool(pathToCards string) (corp []Card, runner []Card) {
-  file, err := ioutil.ReadFile(pathToCards)
-  if err != nil {
-    log.Fatalf("File error: %v \n", err)
-    os.Exit(1)
-  }
-
-  corp, runner = ProcessFile(file)
-  return corp, runner
-}
-
-func SetSeed(randSeed int64) {
-  rand.Seed(randSeed)
-}
-
-type PlayerPacks struct {
-  Corp []map[string]int
-  Runner []map[string]int
-}
-
-func CreateDraftPacks(numPlayers int, numPacks int, cardsPerDeck int, pathsToCards string) (playerPools []PlayerPacks) {
-
-  // load pool into memory
-  corp, runner := LoadPool(pathsToCards)
-
-  for i := 0; i < numPlayers; i++ {
-    fmt.Printf("generating draft pack for player %d \n", i)
-
-    corpPacks := []map[string]int{}
-    runnerPacks := []map[string]int{}
-
-    for n := 0; n < numPacks; n++ {
-      newCorpPacks := GeneratePool(cardsPerDeck, corp)
-      newRunnerPacks := GeneratePool(cardsPerDeck, runner)
-
-      corpPacks = append(corpPacks, newCorpPacks)
-      runnerPacks = append(runnerPacks, newRunnerPacks)
-    }
-
-    pp := PlayerPacks{Corp: corpPacks, Runner: runnerPacks}
-    playerPools = append(playerPools, pp)
-  }
-
-  return playerPools
 }
 
