@@ -6,7 +6,9 @@ import (
 
 func TestNewGame(t *testing.T) {
 
-	// define 4 players
+	// define 4 players for now
+  numPlayers := 4
+
 	players := []*Player{&Player{Name: "Jedi Bear", Id: 0},
 		&Player{Name: "Star Fox", Id: 2},
 		&Player{Name: "Captain Falcon", Id: 8},
@@ -17,7 +19,7 @@ func TestNewGame(t *testing.T) {
 
 	t.Logf("new game: %#v \n", g)
 
-	if len(g.Players) != 4 {
+	if len(g.Players) != numPlayers {
 		t.Errorf("Incorrect number of players! \n")
 	} else {
 		t.Logf("Starting game with correct number of players. \n")
@@ -25,7 +27,9 @@ func TestNewGame(t *testing.T) {
 
 	// seating order check
 	for i := g.SeatingOrder.Front(); i != nil; i = i.Next() {
-		//front := g.SeatingOrder.Front()
 		t.Logf("front of the list: %#v \n", i.Value.(*Player).Name)
 	}
+
+  // generate card packs
+
 }
