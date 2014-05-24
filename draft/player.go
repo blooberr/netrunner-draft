@@ -5,5 +5,7 @@ type Player struct {
   Id int
   CardsDrafted map[string]int // strCode -> number of items
   CardsInHand map[string]int
-
+  CorpStartingPack []map[string]int
+  RunnerStartingPack []map[string]int
 }
+

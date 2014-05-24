@@ -3,6 +3,7 @@ package draft
 import (
 	"container/list"
 	"fmt"
+  "github.com/blooberr/netrunner-draft/pool"
 )
 
 type Game struct {
@@ -25,3 +26,17 @@ func (g *Game) SeatPlayers() {
 		g.SeatingOrder.PushBack(player)
 	}
 }
+
+func (g *Game) CreateDraftPacks(seed int64,
+  numPlayers int,
+  numPacksPerSide int,
+  cardsPerPack int,
+  dataPath string) (playerPools []pool.PlayerPacks) {
+
+  pool.SetSeed(seed)
+  playerPools = pool.CreateDraftPacks(numPlayers, numPacksPerSide, cardsPerPack, dataPath)
+
+  // fmt.Printf("%#v \n", playerPools)
+  return playerPools
+}
+

@@ -7,7 +7,7 @@ import (
 func TestNewGame(t *testing.T) {
 
 	// define 4 players for now
-  numPlayers := 4
+	numPlayers := 4
 
 	players := []*Player{&Player{Name: "Jedi Bear", Id: 0},
 		&Player{Name: "Star Fox", Id: 2},
@@ -30,6 +30,30 @@ func TestNewGame(t *testing.T) {
 		t.Logf("front of the list: %#v \n", i.Value.(*Player).Name)
 	}
 
-  // generate card packs
+	// generate card packs
+	pp := g.CreateDraftPacks(12345,
+		len(players),
+		4,
+		10,
+		"../data/cards.json")
 
+  // load player struct with each individual booster pack.
+	for id, player := range pp {
+    players[id].CorpStartingPack = player.Corp
+    players[id].RunnerStartingPack = player.Runner
+
+		for packId, corpPack := range player.Corp {
+			t.Logf("Player [%d] Corp: %d - %#v \n", id, packId, corpPack)
+		}
+
+		for packId, runPack := range player.Runner {
+			t.Logf("Player [%d] Runner: %d - %#v \n", id, packId, runPack)
+		}
+	}
+
+  t.Logf("Starting packs. \n")
+  for _, player := range players {
+    t.Logf("player %s - %#v \n", player.Name, player.CorpStartingPack[0])
+    t.Logf("player %s - %#v \n", player.Name, player.RunnerStartingPack[0])
+  }
 }
