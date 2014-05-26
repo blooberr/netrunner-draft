@@ -34,19 +34,16 @@ func TestNewGame(t *testing.T) {
     player.PrintRunnerPacks()
   }
 
-/*
-  // draft pass 1
-  // set beginnig direction
-  round := 0
+  packNumber := 0
+  for _, player := range g.Players {
+    card := player.PickRandomCard(packNumber, true)
+    //t.Logf("card remaining: %#v \n", player.CorpPacks[0])
+    t.Logf("\npicked -- %#v \n", card.Title)
+    t.Logf("cards left: \n")
+    for _, card := range player.CorpPacks[packNumber] {
+      t.Logf("-- %s \n", card.Title)
+    }
 
-  for playerId, player := range players {
-    cardInBoosterNum := 0
-
-    pickedCard := player.CorpPacks[round][cardInBoosterNum]
-
-    t.Logf("[%d] %s picked Card: %#v \n", playerId, player.Name, pickedCard)
   }
-*/
-
 }
 

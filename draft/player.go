@@ -2,6 +2,7 @@ package draft
 
 import (
   "fmt"
+  "math/rand"
 
 	"github.com/blooberr/netrunner-draft/pool"
 )
@@ -45,3 +46,24 @@ func (p *Player) PrintRunnerPacks() {
   }
   fmt.Printf("\n")
 }
+
+// PickRandomCard forces a player to select a card randomly. Called if the
+// player takes forever or does it for the luls.
+func (p *Player) PickRandomCard(packNumber int, isCorp bool) (selectedCard pool.Card){
+  if isCorp {
+    packLength := len(p.CorpPacks[packNumber])
+    cardPosition := rand.Intn(packLength)
+    selectedCard = p.CorpPacks[packNumber][cardPosition]
+
+    p.CorpPacks[packNumber] = p.CorpPacks[packNumber][:cardPosition + copy(p.CorpPacks[packNumber][cardPosition:], p.CorpPacks[packNumber][cardPosition+1:])]
+  } else {
+    packLength := len(p.RunnerPacks[packNumber])
+    cardPosition := rand.Intn(packLength)
+    selectedCard = p.RunnerPacks[packNumber][cardPosition]
+
+    p.RunnerPacks[packNumber] = p.RunnerPacks[packNumber][:cardPosition + copy(p.RunnerPacks[packNumber][cardPosition:], p.RunnerPacks[packNumber][cardPosition+1:])]
+  }
+
+  return selectedCard
+}
+

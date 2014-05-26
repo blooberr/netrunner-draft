@@ -43,3 +43,8 @@ func (g *Game) CreateDraftPacks(numPacksPerSide int,
   }
 
 }
+
+// RunDraft steps:
+// players pick a card in their starting pack and pass in a direction.
+func (g *Game) RunDraft() {
+}
