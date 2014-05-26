@@ -7,17 +7,20 @@ import (
 func TestNewGame(t *testing.T) {
 
 	// define 4 players for now
-	numPlayers := 4
-
 	players := []*Player{&Player{Name: "Jedi Bear", Id: 0},
 		&Player{Name: "Star Fox", Id: 2},
 		&Player{Name: "Captain Falcon", Id: 8},
 		&Player{Name: "Hiphop Rex", Id: 3},
 	}
 
-	g := NewGame(players)
+  numPlayers := len(players)
+  randomSeed := int64(12345)
 
-	t.Logf("new game: %#v \n", g)
+  numberOfPacks := 4
+  cardsPerPack := 10
+
+	g := NewGame(randomSeed, numberOfPacks, cardsPerPack, players)
+	t.Logf("New game: %#v \n", g)
 
 	if len(g.Players) != numPlayers {
 		t.Errorf("Incorrect number of players! \n")
@@ -25,38 +28,18 @@ func TestNewGame(t *testing.T) {
 		t.Logf("Starting game with correct number of players. \n")
 	}
 
-	// seating order check
-	for i := g.SeatingOrder.Front(); i != nil; i = i.Next() {
-		t.Logf("front of the list: %#v \n", i.Value.(*Player).Name)
-	}
-
-	// generate card packs
-	pp := g.CreateDraftPacks(12345,
-		len(players),
-		4,
-		10,
-		"../data/cards.json")
-
-  // load player struct with each individual booster pack.
-	for id, player := range pp {
-    players[id].CorpStartingPack = player.Corp
-    players[id].RunnerStartingPack = player.Runner
-
-		for packId, corpPack := range player.Corp {
-			t.Logf("Player [%d] Corp: %d - %#v \n", id, packId, corpPack)
-		}
-
-		for packId, runPack := range player.Runner {
-			t.Logf("Player [%d] Runner: %d - %#v \n", id, packId, runPack)
-		}
-	}
-
-  t.Logf("Starting packs. \n")
-  for _, player := range players {
-    t.Logf("player %s - %#v \n", player.Name, player.CorpStartingPack[0])
-    t.Logf("player %s - %#v \n", player.Name, player.RunnerStartingPack[0])
+  t.Logf("Starting packs for all players: \n")
+  for playerOrder, player := range g.Players {
+    for corpPackNumber, cardsInPack := range player.CorpPacks {
+      t.Logf("Player [%d: %s] with corp pack number: %d \n", playerOrder, player.Name, corpPackNumber)
+      for _, card := range cardsInPack {
+        t.Logf("-- %s\n", card.Title)
+      }
+      t.Logf("********* \n")
+    }
   }
 
+/*
   // draft pass 1
   // set beginnig direction
   round := 0
@@ -64,10 +47,11 @@ func TestNewGame(t *testing.T) {
   for playerId, player := range players {
     cardInBoosterNum := 0
 
-    pickedCard := player.CorpStartingPack[round][cardInBoosterNum]
+    pickedCard := player.CorpPacks[round][cardInBoosterNum]
 
     t.Logf("[%d] %s picked Card: %#v \n", playerId, player.Name, pickedCard)
   }
+*/
 
 }
 

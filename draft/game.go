@@ -1,42 +1,45 @@
 package draft
 
 import (
-	"container/list"
 	"fmt"
+
   "github.com/blooberr/netrunner-draft/pool"
 )
 
 type Game struct {
 	Players      []*Player
-	SeatingOrder list.List
+  Pool         *pool.Pool
 }
 
-func NewGame(players []*Player) (game *Game) {
+func NewGame(seed int64, numberOfPacks int, cardsPerPack int, players []*Player) (game *Game) {
 	fmt.Printf("Starting new game with %d players.\n", len(players))
 
-	g := &Game{Players: players}
-	g.SeatPlayers()
+  p := pool.InitPool(seed, "../data/cards.json")
+
+	g := &Game{Players: players, Pool: p}
+	g.InitPlayers(numberOfPacks)
+  g.CreateDraftPacks(numberOfPacks, cardsPerPack)
+
 	return g
 }
 
-func (g *Game) SeatPlayers() {
-
+// InitPlayers is a wrapper to call player.InitPlayer() on all players
+func (g *Game) InitPlayers(numPacks int) {
 	for _, player := range g.Players {
-		fmt.Printf("player: %#v \n", player)
-		g.SeatingOrder.PushBack(player)
+    player.InitPlayer(numPacks)
 	}
 }
 
-func (g *Game) CreateDraftPacks(seed int64,
-  numPlayers int,
-  numPacksPerSide int,
-  cardsPerPack int,
-  dataPath string) (playerPools []pool.PlayerPacks) {
+func (g *Game) CreateDraftPacks(numPacksPerSide int,
+  cardsPerPack int) {
 
-  pool.SetSeed(seed)
-  playerPools = pool.CreateDraftPacks(numPlayers, numPacksPerSide, cardsPerPack, dataPath)
+  for _, player := range g.Players {
+    for pack := 0; pack < numPacksPerSide; pack++ {
 
-  // fmt.Printf("%#v \n", playerPools)
-  return playerPools
+      //fmt.Printf("CreateDraftPacks: %#v \n", player)
+      player.CorpPacks = append(player.CorpPacks, g.Pool.GenerateCorpBooster(cardsPerPack))
+      player.RunnerPacks = append(player.RunnerPacks, g.Pool.GenerateRunnerBooster(cardsPerPack))
+    }
+  }
+
 }
-
