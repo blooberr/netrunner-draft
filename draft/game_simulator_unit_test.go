@@ -29,14 +29,9 @@ func TestNewGame(t *testing.T) {
 	}
 
   t.Logf("Starting packs for all players: \n")
-  for playerOrder, player := range g.Players {
-    for corpPackNumber, cardsInPack := range player.CorpPacks {
-      t.Logf("Player [%d: %s] with corp pack number: %d \n", playerOrder, player.Name, corpPackNumber)
-      for _, card := range cardsInPack {
-        t.Logf("-- %s\n", card.Title)
-      }
-      t.Logf("********* \n")
-    }
+  for _, player := range g.Players {
+    player.PrintCorpPacks()
+    player.PrintRunnerPacks()
   }
 
 /*
