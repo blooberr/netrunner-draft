@@ -7,6 +7,13 @@ import (
 	"github.com/blooberr/netrunner-draft/pool"
 )
 
+type Direction bool
+
+const (
+  Right Direction = true
+  Left Direction = false
+)
+
 type Game struct {
 	Players []*Player
 	Pool    *pool.Pool
@@ -92,18 +99,36 @@ func (g *Game) PrintDraftedCards() {
 // PassCards when this is called, everyone rotates hands.
 // passing right is defined as shifting +1 (player order)
 // passing left is defined as shifting -1
+func (g *Game) PassCards(direction Direction) {
+  if direction == Right {
+    fmt.Printf("passing cards right.\n")
 
-func (g *Game) PassCards(direction string, packNumber int, isCorp bool) {
-	if direction == "l" {
-		fmt.Printf("Passing left.\n")
+    // drop last element, move to front
+    blank := [][](pool.Card){}
+    blank = append(blank, g.CurrentPacks[len(g.CurrentPacks)-1]) // insert last one
+    blank = append(blank, g.CurrentPacks[:len(g.CurrentPacks)-1]...)
 
-		if isCorp == true {
-		}
+    g.CurrentPacks = blank
 
-	} else {
-		fmt.Printf("Passing right.\n")
-	}
+  } else { // direction should be left
+    fmt.Printf("passing cards left. \n")
+    blank := [][](pool.Card){}
+    blank = append(blank, g.CurrentPacks[1:len(g.CurrentPacks)]...)
+    blank = append(blank, g.CurrentPacks[1]) // insert last one
 
+    g.CurrentPacks = blank
+  }
+}
+
+// Print assigned packs
+func (g *Game) PrintCurrentPacks() {
+  for index, cards := range g.CurrentPacks {
+    fmt.Printf("player [%d] is looking at: \n", index)
+    for _, card := range cards {
+      fmt.Printf("[ %s ] ", card.Title)
+    }
+    fmt.Printf("\n")
+  }
 }
 
 // RunDraft steps:

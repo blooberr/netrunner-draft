@@ -43,36 +43,29 @@ func TestNewGame(t *testing.T) {
     t.Logf("player (%d) [%s] has been forced to randomly draft %s \n", playerIndex, player.Name, card.Title)
   }
 
+  g.PassCards(Right)
+  g.PrintCurrentPacks()
 /*
-  // everyone randomly drafts a card
-  for _, player := range g.Players {
-    card := player.PickRandomCard(packNumber, corpRound)
-    //t.Logf("card remaining: %#v \n", player.CorpPacks[0])
-    t.Logf("\npicked -- %#v \n", card.Title)
-    t.Logf("cards left: \n")
-    for _, card := range player.CorpPacks[packNumber] {
-      t.Logf("-- %s \n", card.Title)
+  for index, cards := range g.CurrentPacks {
+    t.Logf("player [%d] starts with: \n", index)
+    for _, card := range cards {
+      t.Logf("[%d] card - %s \n", index, card.Title)
     }
-    player.AddCard(card)
   }
 */
 
-/*
-	packNumber := 0
-  corpRound := true
-	for _, player := range g.Players {
-		card := player.PickRandomCard(packNumber, corpRound)
-		//t.Logf("card remaining: %#v \n", player.CorpPacks[0])
-		t.Logf("\npicked -- %#v \n", card.Title)
-		t.Logf("cards left: \n")
-		for _, card := range player.CorpPacks[packNumber] {
-			t.Logf("-- %s \n", card.Title)
-		}
-		player.AddCard(card)
-	}
+  for playerIndex, player := range g.Players {
+    card := g.ForceRandom(playerIndex)
+    t.Logf("player (%d) [%s] has been forced to randomly draft %s \n", playerIndex, player.Name, card.Title)
+  }
 
-	g.PrintDraftedCards()
-*/
+  g.PassCards(Right)
+  g.PrintCurrentPacks()
 
-	// g.PassCards("r", packNumber, corpRound)
+  for playerIndex, player := range g.Players {
+    card := g.ForceRandom(playerIndex)
+    t.Logf("player (%d) [%s] has been forced to randomly draft %s \n", playerIndex, player.Name, card.Title)
+  }
+
+
 }
