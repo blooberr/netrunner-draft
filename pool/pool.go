@@ -10,6 +10,13 @@ import (
 	"sort"
 )
 
+type Faction int
+
+const (
+  Corp   Faction = 0
+  Runner Faction = 1
+)
+
 type Pool struct {
 	DataPath string
 	Corp     []Card
