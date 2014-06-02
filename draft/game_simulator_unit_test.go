@@ -38,34 +38,15 @@ func TestNewGame(t *testing.T) {
   }
 
   // simulate players drafting a card.  (Using force random)
-  for playerIndex, player := range g.Players {
-    card := g.ForceRandom(playerIndex)
-    t.Logf("player (%d) [%s] has been forced to randomly draft %s \n", playerIndex, player.Name, card.Title)
-  }
 
-  g.PassCards(Right)
-  g.PrintCurrentPacks()
-/*
-  for index, cards := range g.CurrentPacks {
-    t.Logf("player [%d] starts with: \n", index)
-    for _, card := range cards {
-      t.Logf("[%d] card - %s \n", index, card.Title)
+  for turns := 0; turns < 10; turns ++ {
+    for playerIndex, player := range g.Players {
+      card := g.ForceRandom(playerIndex)
+      t.Logf("player (%d) [%s] has been forced to randomly draft %s \n", playerIndex, player.Name, card.Title)
     }
+
+    g.PassCards(Left)
+    g.PrintCurrentPacks()
   }
-*/
-
-  for playerIndex, player := range g.Players {
-    card := g.ForceRandom(playerIndex)
-    t.Logf("player (%d) [%s] has been forced to randomly draft %s \n", playerIndex, player.Name, card.Title)
-  }
-
-  g.PassCards(Right)
-  g.PrintCurrentPacks()
-
-  for playerIndex, player := range g.Players {
-    card := g.ForceRandom(playerIndex)
-    t.Logf("player (%d) [%s] has been forced to randomly draft %s \n", playerIndex, player.Name, card.Title)
-  }
-
 
 }
