@@ -4,6 +4,7 @@ import (
 	"code.google.com/p/go.net/websocket"
 	"fmt"
 	"net/http"
+  "time"
 )
 
 type Server struct {
@@ -27,21 +28,31 @@ func (s *Server) Launch() {
 
 		client := NewClient(ws, playerName)
 		s.AddClientChannel <- client
-    client.Launch()
+		client.Launch()
 
 		defer ws.Close()
 	}
 
 	http.Handle("/ws", websocket.Handler(onConnect))
 
+  heartBeat := time.NewTicker(time.Second * 5)
+
 	for {
 		select {
+    case <-heartBeat.C:
+      fmt.Printf("Send out heartbeat pulse to all clients\n")
+      heartBeatMap := make(map[string]string)
+      heartBeatMap["heart"] = "beat"
+      cp := CommandPacket{Event: "HeartBeat", Data: heartBeatMap}
+
+      s.Broadcast(cp)
+
 		case newClient := <-s.AddClientChannel:
 			fmt.Printf("Adding new client: %#v \n", newClient)
 
 			newNameMap := make(map[string]string)
 			newNameMap["name"] = newClient.Player.Name
-      cp := CommandPacket{Event: "New Player", Data: newNameMap}
+			cp := CommandPacket{Event: "New Player", Data: newNameMap}
 
 			fmt.Printf("sending on writechan: %#v\n", cp)
 			newClient.Write(cp)
@@ -49,7 +60,16 @@ func (s *Server) Launch() {
 			s.Clients = append(s.Clients, newClient)
 			fmt.Printf("%d are in the lobby.\n", len(s.Clients))
 
-      cp = CommandPacket{Event: "New Player Joined", Data: newNameMap }
+			cp = CommandPacket{Event: "New Player Joined", Data: newNameMap}
+			s.Broadcast(cp)
+
+      lobbyRefreshMap := make(map[string][]string)
+
+      for _, client := range s.Clients {
+        lobbyRefreshMap["players"] = append(lobbyRefreshMap["players"], client.Player.Name)
+      }
+
+      cp = CommandPacket{Event: "Update Lobby", Data: lobbyRefreshMap}
       s.Broadcast(cp)
 		}
 	}
@@ -57,8 +77,8 @@ func (s *Server) Launch() {
 
 // Broadcast sends to all clients connected
 func (s *Server) Broadcast(cp CommandPacket) {
-  for id, client := range s.Clients {
-    fmt.Printf("[%d] %#v \n", id, client)
-    client.Write(cp)
-  }
+	for id, client := range s.Clients {
+		fmt.Printf("[%d] %#v \n", id, client)
+		client.Write(cp)
+	}
 }

@@ -2,8 +2,8 @@ package main
 
 import (
 	//"fmt"
-	"net/http"
 	"github.com/blooberr/netrunner-draft/draft"
+	"net/http"
 )
 
 func main() {
@@ -17,4 +17,3 @@ func main() {
 		panic(err)
 	}
 }
-

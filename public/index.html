@@ -19,7 +19,7 @@
       console.log("connected!");
       console.log(event.data);
 
-      //connection.send(JSON.stringify({event:"New
+      connection.send(JSON.stringify({event:"New", data: "what"}))
     }
 
     connection.onmessage = function(data) {

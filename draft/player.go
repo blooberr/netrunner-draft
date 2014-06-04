@@ -2,6 +2,7 @@ package draft
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 
 	"github.com/blooberr/netrunner-draft/pool"
@@ -10,15 +11,13 @@ import (
 type Faction int
 
 const (
-  Corp   Faction = 0
-  Runner Faction = 1
+	Corp   Faction = 0
+	Runner Faction = 1
 )
 
 type Player struct {
 	Name string
 	Id   int
-	//CardsDrafted map[string]int // strCode -> number of items
-	//CardsInHand  map[string]int
 
 	DraftedCorpCards   []pool.Card
 	DraftedRunnerCards []pool.Card
@@ -87,8 +86,14 @@ func (p *Player) AddCard(card pool.Card, faction pool.Faction) {
 }
 
 func (p *Player) PrintDraftedCards() {
-	fmt.Printf("player %s has drafted the following: \n", p.Name)
+	log.Printf("player %s has drafted the following corp cards: \n", p.Name)
 	for _, card := range p.DraftedCorpCards {
-		fmt.Printf("card: %s \n", card.Title)
+		log.Printf("- %s \n", card.Title)
 	}
+
+	log.Printf("player %s has drafted the following runner cards: \n", p.Name)
+	for _, card := range p.DraftedRunnerCards {
+		log.Printf("- %s \n", card.Title)
+	}
+
 }

@@ -21,6 +21,7 @@ func NewClient(ws *websocket.Conn, playerName string) *Client {
 }
 
 func (c *Client) Launch() {
+  go c.listenRead()
 	c.listenWrite()
 }
 
@@ -37,7 +38,28 @@ func (c *Client) listenWrite() {
 		// send message to the client
 		case msg := <-c.WriteChan:
 			fmt.Printf("receive: %#v \n", msg)
-			websocket.JSON.Send(c.Ws, msg)
+			err := websocket.JSON.Send(c.Ws, msg)
+      if err != nil {
+        fmt.Printf("error: %#v \n", err)
+      }
 		}
 	}
+}
+
+func (c *Client) listenRead() {
+  fmt.Printf("listen on reads \n")
+  for {
+    select {
+
+    // read data from websocket connection
+    default:
+      var cp CommandPacket
+      err := websocket.JSON.Receive(c.Ws, &cp)
+      if err != nil {
+        fmt.Printf("error read: %s \n", err)
+      } else {
+        fmt.Printf("on read : %#v \n", cp)
+      }
+    }
+  }
 }

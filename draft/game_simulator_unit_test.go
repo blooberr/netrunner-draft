@@ -3,7 +3,7 @@ package draft
 import (
 	"testing"
 
-  "github.com/blooberr/netrunner-draft/pool"
+	"github.com/blooberr/netrunner-draft/pool"
 )
 
 func TestNewGame(t *testing.T) {
@@ -28,25 +28,47 @@ func TestNewGame(t *testing.T) {
 		t.Logf("Starting game with correct number of players. \n")
 	}
 
-  // Start with corp first
-  g.BeginRound(pool.Corp)
-  for index, cards := range g.CurrentPacks {
-    t.Logf("player [%d] starts with: \n", index)
-    for _, card := range cards {
-      t.Logf("[%d] card - %s \n", index, card.Title)
-    }
-  }
+	// Start with corp first
 
-  // simulate players drafting a card.  (Using force random)
+	direction := Left
+	for packs := 0; packs < numberOfPacks; packs++ {
+		g.BeginRound(pool.Corp)
 
-  for turns := 0; turns < 10; turns ++ {
-    for playerIndex, player := range g.Players {
-      card := g.ForceRandom(playerIndex)
-      t.Logf("player (%d) [%s] has been forced to randomly draft %s \n", playerIndex, player.Name, card.Title)
-    }
+		// simulate players drafting a card.  (Using force random)
+		for turns := 0; turns < cardsPerPack; turns++ {
+			for playerIndex, player := range g.Players {
+				card := g.ForceRandom(playerIndex)
+				t.Logf("player (%d) [%s] has been forced to randomly draft %s \n", playerIndex, player.Name, card.Title)
+			}
 
-    g.PassCards(Left)
-    g.PrintCurrentPacks()
-  }
+			g.PassCards(direction)
+			g.PrintCurrentPacks()
+		}
+
+		g.PrintDraftedCards()
+
+		direction = !direction
+	}
+
+	// now with runner
+	direction = Left
+	for packs := 0; packs < numberOfPacks; packs++ {
+		g.BeginRound(pool.Runner)
+
+		// simulate players drafting a card.  (Using force random)
+		for turns := 0; turns < cardsPerPack; turns++ {
+			for playerIndex, player := range g.Players {
+				card := g.ForceRandom(playerIndex)
+				t.Logf("player (%d) [%s] has been forced to randomly draft %s \n", playerIndex, player.Name, card.Title)
+			}
+
+			g.PassCards(direction)
+			g.PrintCurrentPacks()
+		}
+
+		g.PrintDraftedCards()
+
+		direction = !direction
+	}
 
 }
