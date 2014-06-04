@@ -10,23 +10,36 @@ import (
 type Server struct {
 	Clients          []*Client
 	AddClientChannel chan *Client
+  RemoveClientChannel chan *Client
+  AutoIncId int
 }
 
 func NewServer() *Server {
 	clients := make([]*Client, 0)
-	addClientConsumer := make(chan *Client, 10)
 
-	return &Server{Clients: clients, AddClientChannel: addClientConsumer}
+	addClientConsumer := make(chan *Client, 10)
+  removeClient := make(chan *Client, 10)
+
+	return &Server{Clients: clients,
+    AddClientChannel: addClientConsumer,
+    RemoveClientChannel: removeClient,
+  }
+
+}
+
+func (s *Server) RemoveClient(client *Client) {
+  s.RemoveClientChannel <- client
 }
 
 func (s *Server) Launch() {
 	fmt.Printf("Launch: running websocket server\n")
 
 	onConnect := func(ws *websocket.Conn) {
-		numClients := len(s.Clients)
-		playerName := fmt.Sprintf("player-%d", numClients)
+		// numClients := len(s.Clients)
+		playerName := fmt.Sprintf("player-%d", s.AutoIncId)
+    s.AutoIncId = s.AutoIncId + 1
 
-		client := NewClient(ws, playerName)
+		client := NewClient(ws, s, playerName)
 		s.AddClientChannel <- client
 		client.Launch()
 
@@ -46,6 +59,15 @@ func (s *Server) Launch() {
       cp := CommandPacket{Event: "HeartBeat", Data: heartBeatMap}
 
       s.Broadcast(cp)
+    case delClient := <-s.RemoveClientChannel:
+      fmt.Printf("Removing client: %#v \n", delClient)
+
+      for i := range s.Clients {
+        if s.Clients[i] == delClient {
+          s.Clients = append(s.Clients[:i], s.Clients[i+1:]...)
+          break
+        }
+      }
 
 		case newClient := <-s.AddClientChannel:
 			fmt.Printf("Adding new client: %#v \n", newClient)
