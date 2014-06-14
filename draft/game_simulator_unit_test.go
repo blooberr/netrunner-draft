@@ -8,11 +8,11 @@ import (
 
 func TestNewGame(t *testing.T) {
 
-	players := []*Player{&Player{Name: "Jedi Bear", Id: 0},
-		&Player{Name: "Star Fox", Id: 2},
-		&Player{Name: "Captain Falcon", Id: 8},
-		&Player{Name: "Hiphop Rex", Id: 3},
-	}
+  players := []*Player{}
+
+  for i := 0; i < 4; i++ {
+    players = append(players, NewPlayer(i))
+  }
 
 	numPlayers := len(players)
 	randomSeed := int64(12345)

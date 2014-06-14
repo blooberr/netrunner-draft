@@ -16,8 +16,9 @@ const (
 )
 
 type Player struct {
-	Name string
-	Id   int
+	Name  string
+	Id    int
+	Ready bool // ready for action!
 
 	DraftedCorpCards   []pool.Card
 	DraftedRunnerCards []pool.Card
@@ -26,10 +27,26 @@ type Player struct {
 	RunnerPacks [][]pool.Card
 }
 
-func (p *Player) InitPlayer(numPacks int) {
-	fmt.Printf("num packs:  %d \n", numPacks)
-	//p.CorpPacks = make([][]pool.Card, numPacks)
-	//fmt.Printf("corp packs: %#v \n", p.CorpPacks)
+/*
+func (p *Player) InitPlayer(name string, id int) {
+  return &Player{Name: name, Id: id}
+}
+*/
+
+func NewPlayer(id int) *Player {
+  return &Player{Ready: false, Name: CreateName(), Id: id}
+}
+
+func (p *Player) InitPlayer() *Player {
+	return &Player{Ready: false, Name: CreateName()}
+}
+
+func (p *Player) SetName(newname string) {
+	p.Name = newname
+}
+
+func (p *Player) SetReady(ready bool) {
+	p.Ready = ready
 }
 
 func (p *Player) PrintCorpPacks() {

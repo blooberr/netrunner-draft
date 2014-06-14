@@ -5,26 +5,89 @@
   </head>
 
   <body>
-    <div>Hello!</div>
+    <div>
+      <div id="playername">Hello</div>
+      <input id="name" type="text" value="player"/>
+      <span>
+        <input id="changename" type="button" value="change"/>
+      </span>
+    </div>
+
+    <div>
+      <input id="ready" type="button" value="ready"/>
+    </div>
 
     <div>
       Players in Lobby
-      <div id="players_in_lobby"></div>
+      <div id="lobby">
+      </div>
     </div>
   </body>
 
   <script language="javascript" type="text/javascript">
+    document.getElementById("changename").onclick = function() {
+      console.log("change name");
+      var name = document.getElementById("name").value;
+      console.log("new name: " + name);
+
+      connection.send(JSON.stringify({
+        event: "NewName",
+        data: {
+          name: name
+        }
+      }))
+    };
+
+    document.getElementById("ready").onclick = function() { 
+      console.log("locked and loaded.\n");
+      connection.send(JSON.stringify({event:"Ready",
+        data:{
+          name: "Leet player"
+        }
+      }))
+    };
+
     var connection = new WebSocket("ws://localhost:12345/ws");
     connection.onopen = function(event) {
       console.log("connected!");
       console.log(event.data);
 
-      connection.send(JSON.stringify({event:"New", data: "what"}))
+      connection.send(JSON.stringify({event:"New",
+        data: {
+          what: "what"
+        }
+      }))
     }
 
-    connection.onmessage = function(data) {
+    connection.onmessage = function(event) {
       console.log("onmessage!");
-      console.log(data);
+      console.log(event.data);
+      packet = JSON.parse(event.data);
+
+      if (packet["event"] == "New Player") {
+        data = packet["data"];
+        name = data["name"];
+        console.log("name: " + name);
+
+        document.getElementById("playername").innerHTML = "Hello " + name;
+        document.getElementById("name").value = name;
+      }
+
+      if (packet["event"] == "New Name") {
+        data = packet["data"];
+        name = data["name"];
+        console.log("name: " + name);
+
+        document.getElementById("playername").innerHTML = "Hello " + name;
+        document.getElementById("name").value = name;
+      }
+
+      if (packet["event"] == "Update Lobby") {
+        data = packet["data"];
+        players = data["players"];
+        document.getElementById("lobby").innerHTML = players;
+      }
+
     }
   </script>
 </html>

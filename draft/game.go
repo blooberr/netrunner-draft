@@ -33,17 +33,20 @@ func NewGame(seed int64, numberOfPacks int, cardsPerPack int, players []*Player)
 	p := pool.InitPool(seed, "../data/cards.json")
 
 	g := &Game{Players: players, Pool: p, NumberOfPacks: numberOfPacks, CardsPerPack: cardsPerPack}
-	g.InitPlayers(numberOfPacks)
+
+	//g.InitPlayers()
 
 	return g
 }
 
 // InitPlayers is a wrapper to call player.InitPlayer() on all players
-func (g *Game) InitPlayers(numPacks int) {
+/*
+func (g *Game) InitPlayers() {
 	for _, player := range g.Players {
-		player.InitPlayer(numPacks)
+		player.InitPlayer()
 	}
 }
+*/
 
 func (g *Game) CreateDraftPacks(numPacksPerSide int,
 	cardsPerPack int) {
